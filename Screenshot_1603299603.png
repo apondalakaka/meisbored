@@ -1,6 +1,5 @@
-from os import name
 import tkinter as tk
-from tkinter import Button, Grid, Tk, messagebox
+from tkinter import Button, messagebox
 import hashlib
 from tkinter import ttk
 import json
@@ -33,32 +32,21 @@ def get_card_number():
         print('beyne 7000000000 ta 60000000000')
         return random.randint(6000000000000000 , 7000000000000000)
 
-def get_destination(card):
-    names =  read_json('esma.json')
-    for name in names :
-        if str(name['card_number']) == card:
-            return names.indx(name)
-        return None
-
-
-
-
 
 ########## def Register Button############
-def confirm(a=None):
-    if note.tab(note.select(), "text") == "Register":
-        info={}
-        info["username"] = username_r.get()
-        info["Password"] = sha1(password_r.get())
-        info["created_at"] = created_at_()
-        info["card_number"] = get_card_number()
-        info["balance"] = 10000
-        names_json = read_json('esma.json')
-        names_json.append(info)
-        write_json('esma.json' , names_json)
-        messagebox.showinfo(title='Success!' , message='You Registered success')
-        username_r.set('')
-        password_r.set('')
+def confirm():
+    info={}
+    info["username"] = username_r.get()
+    info["Password"] = sha1(password_r.get())
+    info["created_at"] = created_at_()
+    info["card_number"] = get_card_number()
+    info["balance"] = 10000
+    names_json = read_json('esma.json')
+    names_json.append(info)
+    write_json('esma.json' , names_json)
+    messagebox.showinfo(title='Success!' , message='You Registered success')
+    username_r.set('')
+    password_r.set('')
 
 
 
@@ -73,20 +61,19 @@ def created_at_():
 
 
 ############################### def login button ######################
-def log_in(a=None):
-    if note.tab(note.select(), "text") == "Log-in":
-        global person ,ind
-        names = read_json('esma.json')
-        for name in  names:
-            if name['username'] == username_l.get():
-                if name['Password']== sha1(password_l.get()):
-                    root.withdraw()#این تابع رووت رو محو میکنه و deiconify هم برش میگردونه
-                    menu.deiconify()
-                    person = name
-                    messagebox.showinfo(title='Success!' , message='You Loged-in successfully!')
-                    return None
-            ind +=1
-        messagebox.showerror(title='Failed', message='Username or password Invalid!')
+def log_in():
+    global person ,ind
+    names = read_json('esma.json')
+    for name in  names:
+        if name['username'] == username_l.get():
+            if name['Password']== sha1(password_l.get()):
+                root.withdraw()#این تابع رووت رو محو میکنه و deiconify هم برش میگردونه
+                menu.deiconify()
+                person = name
+                messagebox.showinfo(title='Success!' , message='You Loged-in successfully!')
+                return None
+        ind +=1
+    messagebox.showerror(title='Failed', message='Username or password Invalid!')
         
     
 
@@ -133,46 +120,10 @@ def balance():
 
 ######################### transfer ####################
 def transfer():
-    def transfer_money():
-        global person,ind
-        amount = transfer_amount.get()
-        if person['balance'] > amount:
-            if get_destination(des.get()):
-                names = read_json('esma.json')
-                names[ind]['balance'] -= amount
-                names[get_destination(des.get())]['balance'] += amount
-                write_json('esma.json' , names)
-                messagebox.showinfo(title='Success!' , message='transferd successfully!')
-            else:
-                messagebox.showerror(title='Failed', message='destination not found!!')
-        else:
-            messagebox.showerror(title='Failed', message='Not enough Money!!')
-
-    def validation(var,indx,mode):
-        c1=len(des.get()) == 16
-        c2=des.get().isdigit()
-        if c1 and c2 :
-            e1.config(bg='green')
-        else:
-            e1.config(bg='red')
-    
-    
-    
-    
-    transfer_root  = tk.Toplevel()
-
-    tk.Label(transfer_root,text='AMOUNT').grid(row=0,column = 0)
-    transfer_amount = tk.IntVar()
-    tk.Entry(transfer_root , textvariable=transfer_amount , cnf=conf).grid(row=0 , column =1 )
-    tk.Label(transfer_root,text='DESTINATION').grid(row=1 , column =0 )
-    des = tk.StringVar()
-    des.trace_add('write', validation)
-
-    e1 = tk.Entry(transfer_root, cnf=conf , textvariable= des)
-    e1.grid(row=1,column=1)
-    
-    Button(transfer_root , text='TRANSFER' , cnf=conf , command=transfer).grid(row=2 , column= 0 )
-    Button(transfer_root , text='Close' , cnf=conf,command=transfer_root.destroy).grid(row=3 , column=0 )
+    def ppress():
+        ti = tk.Toplevel()
+        trNSFERKN = tk.IntVar()
+        Button(ti , text='transfer' , cnf=conf , command=ppress)
 ######################### change [pass] ####################
 def change_pass():
     pass
@@ -200,9 +151,7 @@ tk.Label(register , text='password' ).grid(row=1 , column=0)
 password_r = tk.StringVar()
 tk.Entry( register , textvariable=password_r ,  show= '*').grid(row=1 , column=1)
 
-b_register =tk.Button( register , text='Register' , command=confirm)
-b_register.grid(row=2 , column=0 , columnspan=2,sticky=tk.W + tk.E)
-b_register.bind("<Return>", confirm)
+tk.Button( register , text='Register' , command=confirm).grid(row=2 , column=0 , columnspan=2,sticky=tk.W + tk.E)
 tk.Button( register , text='Cancel', command=root.destroy ).grid(row=3 , column=0 , columnspan=2, sticky=tk.W + tk.E)
 
 
@@ -216,10 +165,7 @@ tk.Label(login, text='password' ).grid(row=1 , column=0)
 password_l = tk.StringVar()
 tk.Entry( login, textvariable=password_l , show= '*').grid(row=1 , column=1)
 
-b_log =tk.Button( login, text='Login' , command=log_in)
-b_log.grid(row=2 , column=0 , columnspan=2,sticky=tk.W + tk.E)
-b_log.bind("<Return>", log_in)
-
+tk.Button( login, text='Login' , command=log_in).grid(row=2 , column=0 , columnspan=2,sticky=tk.W + tk.E)
 tk.Button( login, text='Cancel', command=root.destroy ).grid(row=3 , column=0 , columnspan=2, sticky=tk.W + tk.E)
 
 
