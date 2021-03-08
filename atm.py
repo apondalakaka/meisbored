@@ -145,6 +145,7 @@ def transfer():
                 messagebox.showinfo(title='Success!' , message='transferd successfully!')
             else:
                 messagebox.showerror(title='Failed', message='destination not found!!')
+                transfer_root.destroy()
         else:
             messagebox.showerror(title='Failed', message='Not enough Money!!')
 
@@ -175,14 +176,43 @@ def transfer():
     Button(transfer_root , text='Close' , cnf=conf,command=transfer_root.destroy).grid(row=3 , column=0 )
 ######################### change [pass] ####################
 def change_pass():
-    pass
+    def call_me_change ():
+        global person , ind
+        if person['Password'] == sha1(for_oldies.get()):
+            if sha1(fornew.get()) == sha1(fornew2.get()):
+                esma = read_json('esma.json')
+                esma[ind]['Password'] = sha1(fornew.get())
+                write_json('esma.json' , esma)
+                messagebox.showerror(title='Failed', message='password changed')
+            else: 
+                messagebox.showerror(title='Failed', message='not matched!')
+        else:
+            messagebox.showerror(title='Failed', message='wrong password!')
+
+    tiplivil = tk.Toplevel()
+
+    tk.Label(tiplivil,text='!old password!').grid(row=0,column = 0)
+    for_oldies = tk.StringVar()
+    tk.Entry(tiplivil , textvariable=for_oldies , cnf=conf).grid(row=0 , column =1 )
+
+    tk.Label(tiplivil,text='#new password#').grid(row=2 , column =0 )
+    fornew = tk.StringVar()
+    tk.Entry(tiplivil , textvariable=fornew , cnf=conf).grid(row=2 , column =1 )
+
+    tk.Label(tiplivil,text='#confrim password#').grid(row=3 , column =0 )
+    fornew2 = tk.StringVar()
+    tk.Entry(tiplivil , textvariable=fornew2 , cnf=conf).grid(row=3 , column =1)
+
+    Button(tiplivil , text='CHANGE PASSWORD' , cnf=conf , command=call_me_change).grid(row=4 , column= 1 )
+
+root = tk.Tk()
 
 
 ######################################################
 ########################## Note book #################
 ######################################################
 
-note = ttk.Notebook()
+note = ttk.Notebook() 
 note.grid(row=0 , column=0)
 register = tk.Frame(note)
 login = tk.Frame(note)
